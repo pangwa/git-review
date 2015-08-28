@@ -249,7 +249,7 @@ def run_custom_script(action):
             raise CustomScriptException(status, output, [path], {})
         elif output and VERBOSE:
             print("script %s output is:" % (path))
-            print(output)
+            print(output.encode(sys.stdout.encoding, errors='replace'))
 
 
 def git_config_get_value(section, option, default=None, as_bool=False):
@@ -616,7 +616,7 @@ def query_reviews_over_ssh(remote_url, change=None, current_patch_set=True,
         "gerrit", "query",
         "--format=JSON %s" % query)
     if VERBOSE:
-        print(output)
+        print(output.encode(sys.stdout.encoding, errors='replace'))
 
     changes = []
     try:
@@ -628,7 +628,7 @@ def query_reviews_over_ssh(remote_url, change=None, current_patch_set=True,
                         changes.append(data)
                 except Exception:
                     if VERBOSE:
-                        print(output)
+                        print(output.encode(sys.stdout.encoding, errors='replace'))
     except Exception as err:
         raise parse_exc(err)
     return changes
@@ -695,11 +695,11 @@ def update_remote(remote):
     cmd = "git remote update %s" % remote
     (status, output) = run_command_status(cmd)
     if VERBOSE:
-        print(output)
+        print(output.encode(sys.stdout.encoding, errors='replace'))
     if status != 0:
         print("Problem running '%s'" % cmd)
         if not VERBOSE:
-            print(output)
+            print(output.encode(sys.stdout.encoding, errors='replace'))
         return False
     return True
 
@@ -808,7 +808,7 @@ def rebase_changes(branch, remote, interactive=True):
     if status != 0:
         print("Errors running %s" % cmd)
         if interactive:
-            print(output)
+            print(output.encode(sys.stdout.encoding, errors='replace'))
         return False
     _orig_head = output
 
@@ -829,7 +829,7 @@ def rebase_changes(branch, remote, interactive=True):
     if status != 0:
         print("Errors running %s" % cmd)
         if interactive:
-            print(output)
+            print(output.encode(sys.stdout.encoding, errors='replace'))
             print("It is likely that your change has a merge conflict. "
                   "You may resolve it in the working tree now as "
                   "described above and then run 'git review' again, or "
@@ -850,7 +850,7 @@ def undo_rebase():
     (status, output) = run_command_status(cmd)
     if status != 0:
         print("Errors running %s" % cmd)
-        print(output)
+        print(output.encode(sys.stdout.encoding, errors='replace'))
         return False
     return True
 
@@ -877,7 +877,7 @@ def assert_one_change(remote, branch, yes, have_hook):
     (status, output) = run_command_status(cmd)
     if status != 0:
         print("Had trouble running %s" % cmd)
-        print(output)
+        print(output.encode(sys.stdout.encoding, errors='replace'))
         sys.exit(1)
     filtered = filter(None, output.split("\n"))
     output_lines = sum(1 for s in filtered)
@@ -1545,7 +1545,7 @@ def _main():
         print("\t%s\n" % cmd)
     else:
         (status, output) = run_command_status(cmd)
-        print(output)
+        print(output.encode(sys.stdout.encoding, errors='replace'))
 
     if options.finish and not options.dry and status == 0:
         finish_branch(branch)
